@@ -1,25 +1,15 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
 
-interface UseLogsPollingResult {
-  isPolling: boolean
-  startPolling: () => void
-  stopPolling: () => void
-}
+export function useLogsPolling(callback: () => void, intervalMs = 3000) {
+  useEffect(() => {
+    callback()
 
-export function useLogsPolling(): UseLogsPollingResult {
-  const [isPolling, setIsPolling] = useState(false)
+    const intervalId = window.setInterval(() => {
+      callback()
+    }, intervalMs)
 
-  const startPolling = () => {
-    setIsPolling(true)
-  }
-
-  const stopPolling = () => {
-    setIsPolling(false)
-  }
-
-  return {
-    isPolling,
-    startPolling,
-    stopPolling,
-  }
+    return () => {
+      window.clearInterval(intervalId)
+    }
+  }, [callback, intervalMs])
 }
